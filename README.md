@@ -1,4 +1,5 @@
-# ViXEn - **Vi**ta **X**-input **En**abler
+# ViXEn
+**Vi**ta **X**-input **En**abler
 
 PSVita kernel driver for x-input gamepads (e.g. xbox360)
 
@@ -13,13 +14,14 @@ Note: xbox 360 wireless receiver takes over all 4 gamepad ports, so you can't us
 For full list of supported devices see [here](src/devicelist.c)
 
 ## Installing
-* Add vixen.skprx under `*KERNEL` in tai config and reboot.
+* Copy `vixen.skprx` into `ur0:tai` folder
+* Add `ur0:tai/vixen.skprx` line under `*KERNEL` in tai config and reboot.
 * For vita you need usb Y-cable and external power. See [this](https://github.com/isage/vita-usb-ether#hardware) for example.
 
 ## Building
 
 * Install vitausb from https://github.com/isage/vita-packages-extra
-* `mkdir build && cmake -DCMAKE_BUILD_TYPE=Release .. && make install`
+* `mkdir build && cmake -DCMAKE_BUILD_TYPE=Release .. && make`
 
 ## License
 

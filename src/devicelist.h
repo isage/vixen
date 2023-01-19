@@ -15,7 +15,6 @@ typedef struct
   vixenPadType type;
   uint16_t idVendor;
   uint16_t idProduct;
-  const char *name;
 } gamepad_t;
 
 extern gamepad_t _devices[];

@@ -213,7 +213,7 @@ int libvixen_attach(int device_id)
     {
       if (_devices[i].idVendor == device->idVendor && _devices[i].idProduct == device->idProduct)
       {
-        ksceDebugPrintf("Found %s, attaching\n", _devices[i].name);
+        ksceDebugPrintf("Found, attaching\n");
         break;
       }
     }

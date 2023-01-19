@@ -99,6 +99,20 @@ DECL_FUNC_HOOK(sceCtrlSetActuator, int port, const SceCtrlActuator *pState)
   return TAI_CONTINUE(int, sceCtrlSetActuatorHookRef, port, pState);
 }
 
+DECL_FUNC_HOOK(sceCtrlDisconnect, int port)
+{
+  if (port > 0 && controllers[port - 1].attached && controllers[port - 1].inited)
+  {
+    if (controllers[port - 1].type == PAD_XBOX360W)
+    {
+        Xbox360WController_turnOff(&controllers[port - 1]);
+        return 0;
+    }
+  }
+  return TAI_CONTINUE(int, sceCtrlDisconnectHookRef, port);
+}
+
+
 static void patchControlData(int port, SceCtrlData *data, int count, uint8_t negative, uint8_t triggers_ext)
 {
   // Use controller 1 data for port 0, or controllers 1-4 for ports 1-4
@@ -361,6 +375,8 @@ int module_start(SceSize args, void *argp)
   BIND_FUNC_OFFSET_HOOK(ksceCtrlPeekBufferPositiveExt2, KERNEL_PID, modInfo.modid, 0, 0x4B48 | 1, 1);
   BIND_FUNC_OFFSET_HOOK(ksceCtrlReadBufferPositiveExt2, KERNEL_PID, modInfo.modid, 0, 0x4E14 | 1, 1);
 
+  BIND_FUNC_EXPORT_HOOK(sceCtrlDisconnect, KERNEL_PID, "SceCtrl", TAI_ANY_LIBRARY, 0x16D26DC7);
+
   started = 1;
 
   if (ksceSblAimgrIsGenuineVITA())
@@ -383,6 +399,7 @@ int module_stop(SceSize args, void *argp)
   UNBIND_FUNC_HOOK(ksceCtrlGetControllerPortInfo);
   UNBIND_FUNC_HOOK(sceCtrlGetBatteryInfo);
   UNBIND_FUNC_HOOK(sceCtrlSetActuator);
+  UNBIND_FUNC_HOOK(sceCtrlDisconnect);
 
   // Unhook control data functions
   UNBIND_FUNC_HOOK(ksceCtrlReadBufferNegative);

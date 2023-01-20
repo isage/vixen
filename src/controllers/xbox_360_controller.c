@@ -80,7 +80,6 @@ uint8_t Xbox360Controller_probe(Controller *c, int device_id, int port)
 
 void Xbox360Controller_setRumble(Controller *c, uint8_t small, uint8_t large)
 {
-  ksceDebugPrintf("setRumble(%d, %d)\n", small, large);
   uint8_t rumblecmd[] __attribute__((aligned(64))) = {0x00, 0x08, 0x08, small, large, 0x00, 0x00, 0x00};
 
   usb_write(c, rumblecmd, 8);
@@ -139,10 +138,9 @@ uint8_t Xbox360Controller_processReport(Controller *c, size_t length)
     report.thumb_l = bit(c->buffer + 2, 6);
     report.thumb_r = bit(c->buffer + 2, 7);
 
-    report.lb     = bit(c->buffer + 3, 0);
-    report.rb     = bit(c->buffer + 3, 1);
-    report.guide  = bit(c->buffer + 3, 2);
-    report.dummy1 = bit(c->buffer + 3, 3);
+    report.lb    = bit(c->buffer + 3, 0);
+    report.rb    = bit(c->buffer + 3, 1);
+    report.guide = bit(c->buffer + 3, 2);
 
     report.a = bit(c->buffer + 3, 4);
     report.b = bit(c->buffer + 3, 5);
@@ -157,9 +155,6 @@ uint8_t Xbox360Controller_processReport(Controller *c, size_t length)
 
     report.x2 = *((int16_t *)(c->buffer + 10));
     report.y2 = *((int16_t *)(c->buffer + 12));
-
-    report.dummy2 = *(c->buffer + 14);
-    report.dummy3 = *((int16_t *)(c->buffer + 18));
 
     c->controlData.buttons = 0;
 

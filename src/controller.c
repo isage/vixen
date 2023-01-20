@@ -1,5 +1,6 @@
 #include "controller.h"
 
+#include "controllers/ds3_controller.h"
 #include "controllers/xbox_360_controller.h"
 #include "controllers/xbox_360w_controller.h"
 
@@ -18,6 +19,11 @@ void on_read_data(int32_t result, int32_t count, void *arg)
       if (c->type == PAD_XBOX360)
       {
         if (Xbox360Controller_processReport(c, count))
+          ksceKernelPowerTick(0); // cancel sleep timers.
+      }
+      else if (c->type == PAD_DS3)
+      {
+        if (DS3Controller_processReport(c, count))
           ksceKernelPowerTick(0); // cancel sleep timers.
       }
       else

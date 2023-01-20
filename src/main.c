@@ -1,4 +1,5 @@
 #include "controller.h"
+#include "controllers/ds3_controller.h"
 #include "controllers/xbox_360_controller.h"
 #include "controllers/xbox_360w_controller.h"
 #include "devicelist.h"
@@ -91,6 +92,8 @@ DECL_FUNC_HOOK(sceCtrlSetActuator, int port, const SceCtrlActuator *pState)
     ksceKernelMemcpyUserToKernel(&lpState, (void *)pState, sizeof(SceCtrlActuator));
     if (controllers[port - 1].type == PAD_XBOX360)
       Xbox360Controller_setRumble(&controllers[port - 1], lpState.small, lpState.large);
+    else if (controllers[port - 1].type == PAD_DS3)
+      DS3Controller_setRumble(&controllers[port - 1], lpState.small, lpState.large);
     else
       Xbox360WController_setRumble(&controllers[port - 1], lpState.small, lpState.large);
     return 0;
@@ -105,13 +108,12 @@ DECL_FUNC_HOOK(sceCtrlDisconnect, int port)
   {
     if (controllers[port - 1].type == PAD_XBOX360W)
     {
-        Xbox360WController_turnOff(&controllers[port - 1]);
-        return 0;
+      Xbox360WController_turnOff(&controllers[port - 1]);
+      return 0;
     }
   }
   return TAI_CONTINUE(int, sceCtrlDisconnectHookRef, port);
 }
-
 
 static void patchControlData(int port, SceCtrlData *data, int count, uint8_t negative, uint8_t triggers_ext)
 {
@@ -273,7 +275,11 @@ int libvixen_attach(int device_id)
 
       if (!controllers[cont].attached)
       {
-        Xbox360Controller_probe(&controllers[cont], device_id, cont);
+        if (_devices[i].type == PAD_XBOX360)
+          Xbox360Controller_probe(&controllers[cont], device_id, cont);
+        else
+          DS3Controller_probe(&controllers[cont], device_id, cont);
+
         // something gone wrong during usb init
         if (!controllers[cont].inited)
         {

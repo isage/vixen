@@ -18,6 +18,7 @@ add_executable(${PROJECT_NAME}
   src/controller.c
   src/controllers/xbox_360_controller.c
   src/controllers/xbox_360w_controller.c
+  src/controllers/ds3_controller.c
 )
 
 target_link_libraries(${PROJECT_NAME}

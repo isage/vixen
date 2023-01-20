@@ -177,10 +177,9 @@ uint8_t Xbox360WController_processReport(Controller *c, size_t length)
       report.thumb_l = bit(ptr + 2, 6);
       report.thumb_r = bit(ptr + 2, 7);
 
-      report.lb     = bit(ptr + 3, 0);
-      report.rb     = bit(ptr + 3, 1);
-      report.guide  = bit(ptr + 3, 2);
-      report.dummy1 = bit(ptr + 3, 3);
+      report.lb    = bit(ptr + 3, 0);
+      report.rb    = bit(ptr + 3, 1);
+      report.guide = bit(ptr + 3, 2);
 
       report.a = bit(ptr + 3, 4);
       report.b = bit(ptr + 3, 5);
@@ -195,9 +194,6 @@ uint8_t Xbox360WController_processReport(Controller *c, size_t length)
 
       report.x2 = *((int16_t *)(ptr + 10));
       report.y2 = *((int16_t *)(ptr + 12));
-
-      report.dummy2 = *(ptr + 14);
-      report.dummy3 = *((int16_t *)(ptr + 18));
 
       c->controlData.buttons = 0;
 

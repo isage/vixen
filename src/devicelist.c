@@ -71,5 +71,40 @@ gamepad_t _devices[] = {{PAD_XBOX360, 0x045e, 0x028e},  // Microsoft X-Box 360 p
                         {PAD_XBOX360, 0x0e6f, 0x021f},  // Rock Candy Gamepad for Xbox 360
                         {PAD_XBOX360W, 0x045e, 0x0719}, // Xbox 360 Wireless Receiver
                         {PAD_XBOX360W, 0x045e, 0x0291}, // Xbox 360 Wireless Receiver (xbox)
-                        {PAD_DS3, 0x054c, 0x0268},      // DS3 wired
+
+                        {PAD_XBOX, 0x0d2f, 0x0002},     // Andamiro Pump It Up pad
+                        {PAD_XBOX, 0x045e, 0x0202},     // Microsoft X-Box pad v1 (US)
+                        {PAD_XBOX, 0x045e, 0x0285},     // Microsoft X-Box pad (Japan)
+                        {PAD_XBOX, 0x045e, 0x0287},     // Microsoft Xbox Controller S
+                        {PAD_XBOX, 0x045e, 0x0289},     // Microsoft X-Box pad v2 (US)
+                        {PAD_XBOX, 0x046d, 0xca84},     // Logitech Xbox Cordless Controller
+                        {PAD_XBOX, 0x046d, 0xca88},     // Logitech Compact Controller for Xbox
+                        {PAD_XBOX, 0x05fd, 0x1007},     // Mad Catz Controller (unverified)
+                        {PAD_XBOX, 0x05fd, 0x107a},     // InterAct 'PowerPad Pro' X-Box pad (Germany)
+                        {PAD_XBOX, 0x0738, 0x4516},     // Mad Catz Control Pad
+                        {PAD_XBOX, 0x0738, 0x4522},     // Mad Catz LumiCON
+                        {PAD_XBOX, 0x0738, 0x4526},     // Mad Catz Control Pad Pro
+                        {PAD_XBOX, 0x0738, 0x4536},     // Mad Catz MicroCON
+                        {PAD_XBOX, 0x0738, 0x4556},     // Mad Catz Lynx Wireless Controller
+                        {PAD_XBOX, 0x0c12, 0x8802},     // Zeroplus Xbox Controller
+                        {PAD_XBOX, 0x0c12, 0x8810},     // Zeroplus Xbox Controller
+                        {PAD_XBOX, 0x0c12, 0x9902},     // HAMA VibraX - *FAULTY HARDWARE*
+                        {PAD_XBOX, 0x0e4c, 0x1097},     // Radica Gamester Controller
+                        {PAD_XBOX, 0x0e4c, 0x2390},     // Radica Games Jtech Controller
+                        {PAD_XBOX, 0x0e6f, 0x0003},     // Logic3 Freebird wireless Controller
+                        {PAD_XBOX, 0x0e6f, 0x0005},     // Eclipse wireless Controller
+                        {PAD_XBOX, 0x0e6f, 0x0006},     // Edge wireless Controller
+                        {PAD_XBOX, 0x0e8f, 0x0201},     // SmartJoy Frag Xpad/PS2 adaptor
+                        {PAD_XBOX, 0x0f30, 0x0202},     // Joytech Advanced Controller
+                        {PAD_XBOX, 0x0f30, 0x8888},     // BigBen XBMiniPad Controller
+                        {PAD_XBOX, 0x102c, 0xff0c},     // Joytech Wireless Advanced Controller
+                        {PAD_XBOX, 0x044f, 0x0f07},     // Thrustmaster, Inc. Controller
+                        {PAD_XBOX, 0x0e8f, 0x3008},     // Generic xbox control (dealextreme)
+#if defined(WITH_DS3)
+                        {PAD_DS3, 0x054c, 0x0268}, // DS3 wired
+#endif
+                        {PAD_DINPUT, 0x046d, 0xc218}, // Logitech F510 Gamepad [DirectInput Mode] / Rumblepad 2
+                        {PAD_DINPUT, 0x046d, 0xc216}, // Logitech F310 Gamepad [DirectInput Mode] / DualAction
+                        {PAD_DINPUT, 0x054c, 0x0cda},   // Playstation Classic
+
                         {PAD_UNKNOWN, 0x0000, 0x0000}}; // Null

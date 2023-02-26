@@ -6,9 +6,11 @@
 typedef enum
 {
   PAD_UNKNOWN,
+  PAD_XBOX,
   PAD_XBOX360,
   PAD_XBOX360W,
-  PAD_DS3
+  PAD_DS3,
+  PAD_DINPUT,
 } vixenPadType;
 
 typedef struct

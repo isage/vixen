@@ -1,8 +1,10 @@
 #include "controller.h"
 
+#include "controllers/dinput_controller.h"
 #include "controllers/ds3_controller.h"
 #include "controllers/xbox_360_controller.h"
 #include "controllers/xbox_360w_controller.h"
+#include "controllers/xbox_controller.h"
 
 #include <psp2kern/kernel/suspend.h>
 #include <psp2kern/kernel/threadmgr.h>
@@ -11,26 +13,35 @@
 void on_read_data(int32_t result, int32_t count, void *arg)
 {
   // process buffer
+
   Controller *c = (Controller *)arg;
   if (result == 0 && count > 0 && arg)
   {
     if (c->inited)
     {
-      if (c->type == PAD_XBOX360)
+      int ret = 0;
+      switch (c->type)
       {
-        if (Xbox360Controller_processReport(c, count))
-          ksceKernelPowerTick(0); // cancel sleep timers.
+        case PAD_XBOX:
+          ret = XboxController_processReport(c, count);
+          break;
+        case PAD_XBOX360:
+          ret = Xbox360Controller_processReport(c, count);
+          break;
+        case PAD_XBOX360W:
+          ret = Xbox360WController_processReport(c, count);
+          break;
+        case PAD_DS3:
+          ret = DS3Controller_processReport(c, count);
+          break;
+        case PAD_DINPUT:
+          ret = DinputController_processReport(c, count);
+          break;
+        default:
+          break;
       }
-      else if (c->type == PAD_DS3)
-      {
-        if (DS3Controller_processReport(c, count))
-          ksceKernelPowerTick(0); // cancel sleep timers.
-      }
-      else
-      {
-        if (Xbox360WController_processReport(c, count))
-          ksceKernelPowerTick(0); // cancel sleep timers.
-      }
+      if (ret)
+        ksceKernelPowerTick(0); // cancel sleep timers.
     }
   }
 
@@ -39,7 +50,6 @@ void on_read_data(int32_t result, int32_t count, void *arg)
 
 void on_write_data(int32_t result, int32_t count, void *arg)
 {
-  //    ksceDebugPrintf("write status: %d %d\n", result, count);
   // check status
   // do nothing?
 }

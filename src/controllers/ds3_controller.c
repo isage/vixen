@@ -7,9 +7,6 @@
 #include <psp2kern/kernel/debug.h>
 #include <psp2kern/kernel/threadmgr.h>
 
-#define USB_ENDPOINT_OUT 0x02
-#define USB_ENDPOINT_IN 0x81
-
 #define HID_GET_REPORT 0x01
 #define HID_GET_IDLE 0x02
 #define HID_GET_PROTOCOL 0x03
@@ -23,7 +20,9 @@
 
 void oncontrol(int32_t result, int32_t count, void *arg)
 {
+#if defined(DEBUG)
   ksceDebugPrintf("oncontrol: %x %d\n", result, count);
+#endif
 }
 
 uint8_t DS3Controller_probe(Controller *c, int device_id, int port)
@@ -45,7 +44,7 @@ uint8_t DS3Controller_probe(Controller *c, int device_id, int port)
 #if defined(DEBUG)
     ksceDebugPrintf("got EP: %02x\n", endpoint->bEndpointAddress);
 #endif
-    if (endpoint->bEndpointAddress == USB_ENDPOINT_IN)
+    if ((endpoint->bEndpointAddress & SCE_USBD_ENDPOINT_DIRECTION_BITS) == SCE_USBD_ENDPOINT_DIRECTION_IN)
     {
 #if defined(DEBUG)
       ksceDebugPrintf("opening in pipe\n");
@@ -56,7 +55,7 @@ uint8_t DS3Controller_probe(Controller *c, int device_id, int port)
       ksceDebugPrintf("bmAttributes = %x\n", endpoint->bmAttributes);
 #endif
     }
-    else if (endpoint->bEndpointAddress == USB_ENDPOINT_OUT)
+    else if ((endpoint->bEndpointAddress & SCE_USBD_ENDPOINT_DIRECTION_BITS) == SCE_USBD_ENDPOINT_DIRECTION_OUT)
     {
 #if defined(DEBUG)
       ksceDebugPrintf("opening out pipe\n");
@@ -67,6 +66,10 @@ uint8_t DS3Controller_probe(Controller *c, int device_id, int port)
       ksceDebugPrintf("bmAttributes = %x\n", endpoint->bmAttributes);
 #endif
     }
+
+    if (c->pipe_in > 0 && c->pipe_out > 0)
+      break;
+
     endpoint
         = (SceUsbdEndpointDescriptor *)ksceUsbdScanStaticDescriptor(device_id, endpoint, SCE_USBD_DESCRIPTOR_ENDPOINT);
   }
@@ -151,7 +154,6 @@ void DS3Controller_setRumble(Controller *c, uint8_t small, uint8_t large)
   _dr.wIndex        = 0;
   _dr.wLength       = sizeof(cmd);
   int ret           = ksceUsbdControlTransfer(c->pipe_control, (&_dr), (uint8_t *)&cmd, NULL, NULL);
-  ksceDebugPrintf("ksceUsbdControlTransfer(rumble): %x\n", ret);
 }
 
 void DS3Controller_setLed(Controller *c, uint8_t led)
@@ -250,16 +252,10 @@ uint8_t DS3Controller_processReport(Controller *c, size_t length)
   if (report.ps)
     c->controlData.buttons |= SCE_CTRL_PSBUTTON;
 
-  //    ksceDebugPrintf("x1: %d\n", report.x1);
-
   c->controlData.leftX  = report.x1; // / 256 + 128;
   c->controlData.leftY  = report.y1; // / 256 + 128;
   c->controlData.rightX = report.x2; // / 256 + 128;
   c->controlData.rightY = report.y2; // / 256 + 128;
-
-  // up and down are reversed
-  //    c->controlData.leftY  = 255 - c->controlData.leftY;
-  //    c->controlData.rightY = 255 - c->controlData.rightY;
 
   c->controlData.lt = report.l2a;
   c->controlData.rt = report.r2a;

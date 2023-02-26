@@ -33,6 +33,8 @@ typedef struct
   SceUID pipe_control;
   unsigned char buffer[64] __attribute__((aligned(64)));
   size_t buffer_size;
+  int vendor;
+  int product;
 
 } Controller;
 

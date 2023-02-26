@@ -50,6 +50,10 @@ uint8_t Xbox360WController_probe(Controller *c, int device_id, int port)
       ksceDebugPrintf("bmAttributes = %x\n", endpoint->bmAttributes);
 #endif
     }
+
+    if (c->pipe_in > 0 && c->pipe_out > 0)
+      break;
+
     endpoint
         = (SceUsbdEndpointDescriptor *)ksceUsbdScanStaticDescriptor(device_id, endpoint, SCE_USBD_DESCRIPTOR_ENDPOINT);
   }

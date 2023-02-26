@@ -1,7 +1,9 @@
 #include "controller.h"
+#include "controllers/dinput_controller.h"
 #include "controllers/ds3_controller.h"
 #include "controllers/xbox_360_controller.h"
 #include "controllers/xbox_360w_controller.h"
+#include "controllers/xbox_controller.h"
 #include "devicelist.h"
 
 #include <psp2kern/ctrl.h>
@@ -90,12 +92,23 @@ DECL_FUNC_HOOK(sceCtrlSetActuator, int port, const SceCtrlActuator *pState)
   {
     SceCtrlActuator lpState;
     ksceKernelMemcpyUserToKernel(&lpState, (void *)pState, sizeof(SceCtrlActuator));
-    if (controllers[port - 1].type == PAD_XBOX360)
-      Xbox360Controller_setRumble(&controllers[port - 1], lpState.small, lpState.large);
-    else if (controllers[port - 1].type == PAD_DS3)
-      DS3Controller_setRumble(&controllers[port - 1], lpState.small, lpState.large);
-    else
-      Xbox360WController_setRumble(&controllers[port - 1], lpState.small, lpState.large);
+    switch (controllers[port - 1].type)
+    {
+      case PAD_XBOX360:
+        Xbox360Controller_setRumble(&controllers[port - 1], lpState.small, lpState.large);
+        break;
+      case PAD_DS3:
+        DS3Controller_setRumble(&controllers[port - 1], lpState.small, lpState.large);
+        break;
+      case PAD_XBOX360W:
+        Xbox360WController_setRumble(&controllers[port - 1], lpState.small, lpState.large);
+        break;
+      case PAD_XBOX:
+        XboxController_setRumble(&controllers[port - 1], lpState.small, lpState.large);
+        break;
+      default:
+        break;
+    }
     return 0;
   }
 
@@ -275,10 +288,23 @@ int libvixen_attach(int device_id)
 
       if (!controllers[cont].attached)
       {
-        if (_devices[i].type == PAD_XBOX360)
-          Xbox360Controller_probe(&controllers[cont], device_id, cont);
-        else
-          DS3Controller_probe(&controllers[cont], device_id, cont);
+        switch (_devices[i].type)
+        {
+          case PAD_XBOX:
+            XboxController_probe(&controllers[cont], device_id, cont);
+            break;
+          case PAD_XBOX360:
+            Xbox360Controller_probe(&controllers[cont], device_id, cont);
+            break;
+          case PAD_DS3:
+            DS3Controller_probe(&controllers[cont], device_id, cont);
+            break;
+          case PAD_DINPUT:
+            DinputController_probe(&controllers[cont], device_id, cont, device->idVendor, device->idProduct);
+            break;
+          default:
+            break;
+        }
 
         // something gone wrong during usb init
         if (!controllers[cont].inited)
@@ -307,15 +333,21 @@ int libvixen_detach(int device_id)
         {
           if (controllers[j].inited)
           {
-            controllers[j].attached = 0;
-            controllers[j].inited   = 0;
+            controllers[j].attached     = 0;
+            controllers[j].inited       = 0;
+            controllers[i].pipe_in      = 0;
+            controllers[i].pipe_out     = 0;
+            controllers[i].pipe_control = 0;
           }
         }
       }
       else
       {
-        controllers[i].attached = 0;
-        controllers[i].inited   = 0;
+        controllers[i].attached     = 0;
+        controllers[i].inited       = 0;
+        controllers[i].pipe_in      = 0;
+        controllers[i].pipe_out     = 0;
+        controllers[i].pipe_control = 0;
       }
       return SCE_USBD_DETACH_SUCCEEDED;
     }
@@ -360,7 +392,6 @@ int module_start(SceSize args, void *argp)
   BIND_FUNC_EXPORT_HOOK(ksceCtrlGetControllerPortInfo, KERNEL_PID, "SceCtrl", TAI_ANY_LIBRARY, 0xF11D0D30);
   BIND_FUNC_EXPORT_HOOK(sceCtrlGetBatteryInfo, KERNEL_PID, "SceCtrl", TAI_ANY_LIBRARY, 0x8F9B1CE5);
   BIND_FUNC_EXPORT_HOOK(sceCtrlSetActuator, KERNEL_PID, "SceCtrl", TAI_ANY_LIBRARY, 0xDBCAA0C9);
-  ksceDebugPrintf("sceCtrlSetActuatorHookUid = %x\n", sceCtrlSetActuatorHookUid);
 
   if (taiGetModuleInfoForKernel(KERNEL_PID, "SceCtrl", &modInfo) < 0)
     return SCE_KERNEL_START_FAILED;
@@ -387,8 +418,7 @@ int module_start(SceSize args, void *argp)
 
   if (ksceSblAimgrIsGenuineVITA())
   {
-    int ret = ksceUsbServMacSelect(2, 0);
-    ksceDebugPrintf("MAC select = 0x%08x\n", ret);
+    ksceUsbServMacSelect(2, 0);
   }
 
   int ret_drv = ksceUsbdRegisterDriver(&libvixenDriver);

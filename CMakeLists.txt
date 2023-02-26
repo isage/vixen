@@ -16,9 +16,11 @@ add_executable(${PROJECT_NAME}
   src/unpack.c
   src/devicelist.c
   src/controller.c
+  src/controllers/xbox_controller.c
   src/controllers/xbox_360_controller.c
   src/controllers/xbox_360w_controller.c
   src/controllers/ds3_controller.c
+  src/controllers/dinput_controller.c
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -39,6 +41,44 @@ set_target_properties(${PROJECT_NAME}
 )
 
 vita_create_self(${PROJECT_NAME}.skprx ${PROJECT_NAME}
+  CONFIG vixen.yml
+  UNSAFE
+)
+
+add_executable(${PROJECT_NAME}_ds3
+  src/main.c
+  src/unpack.c
+  src/devicelist.c
+  src/controller.c
+  src/controllers/xbox_controller.c
+  src/controllers/xbox_360_controller.c
+  src/controllers/xbox_360w_controller.c
+  src/controllers/ds3_controller.c
+  src/controllers/dinput_controller.c
+)
+
+target_link_libraries(${PROJECT_NAME}_ds3
+  SceDebugForDriver_stub
+  SceSblAIMgrForDriver_stub
+  SceCtrlForDriver_stub
+  SceKernelSuspendForDriver_stub
+  SceSysclibForDriver_stub
+  SceSysmemForDriver_stub
+  SceThreadmgrForDriver_stub
+  SceUsbdForDriver_stub
+  SceUsbServForDriver_stub
+  taihenForKernel_stub
+)
+
+set_target_properties(${PROJECT_NAME}_ds3
+  PROPERTIES LINK_FLAGS "-nostdlib"
+)
+
+target_compile_definitions(${PROJECT_NAME}_ds3
+  PRIVATE WITH_DS3
+)
+
+vita_create_self(${PROJECT_NAME}_ds3.skprx ${PROJECT_NAME}_ds3
   CONFIG vixen.yml
   UNSAFE
 )

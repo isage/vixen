@@ -17,7 +17,7 @@ For full list of supported devices see [here](src/devicelist.c)
 There two versions of plugins: `vixen.skprx` and `vixen_ds3.skprx`. Second one supports wired ds3-alike pads.  
 If you use `vixen_ds3.skprx` you
 1. need to make sure it's first plugin under `*KERNEL`
-2. **will** lose ability to pair wireless ds3 on pstv. So if you need to - temporarily comment-out plugin.
+2. **will** lose ability to pair wireless ds3 via usb on pstv. So if you need to - temporarily comment-out plugin.
 3. ds3 support is very unstable atm.
 Tl;dr if you don't use anything, that presents itself as ds3 (except wireless ds3 itself) - use `vixen.skprx`. Otherwise you may try `vixen_ds3.skprx`
 
@@ -38,6 +38,8 @@ Tl;dr if you don't use anything, that presents itself as ds3 (except wireless ds
   If it's in that list - i can add support. If it isn't - i, most likely, can't without having such device.
 * **Can i install it alongside another input plugin?**
   Generally that isn't recommended. Most input plugins (ds34vita/vitacontrol) hook same functions, conflicts will definitely arise.
+* **There's no guide/home/ps button on my pad**
+  Use L+R+Start combo instead
 
 ## Building
 

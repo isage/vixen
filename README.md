@@ -25,6 +25,7 @@ Tl;dr if you don't use anything, that presents itself as ds3 (except wireless ds
 * Copy `vixen.skprx` or `vixen_ds3.skprx` into `ur0:tai` folder
 * Add `ur0:tai/vixen.skprx` or `ur0:tai/vixen.skprx` line under `*KERNEL` in tai config and reboot.
 * For vita you need usb Y-cable and external power. See [this](https://github.com/isage/vita-usb-ether#hardware) for example.
+* For pstv it is highly recommended to use usb-hub with external power for gamepads with force-feedback.
 
 ## FAQ
 * **Does it support joycon, xbox one s, _insert another wireless controller here_?**  
@@ -33,11 +34,12 @@ Tl;dr if you don't use anything, that presents itself as ds3 (except wireless ds
 * **Can i connect my Xbox 360 pad via charge'n'play?**  
   No. Because it's more charge than play. It doesn't support data. You need wireless receiver.
 * **Does it support _insert controller name here_?**  
-  Currently it supports plenty of x-input devices, original xbox devices (via xbox->usb adapter) and wired ds3 (or ds3 compatible). See [here](src/devicelist.c)
+  Currently it supports plenty of x-input devices, original xbox devices (via xbox->usb adapter) and some wired HID gamepads. See [here](src/devicelist.c)
   If your device isn't in that list (or doesn't present itself as ds3 or xbox or xbox360 pad), see [that list](https://github.com/xboxdrv/xboxdrv/blob/stable/src/xpad_device.cpp#L29)
-  If it's in that list - i can add support. If it isn't - i, most likely, can't without having such device.
+  If it's in that list - i can add support. If it isn't - i, most likely, can't (yet) without having such device.
 * **Can i install it alongside another input plugin?**
-  Generally that isn't recommended. Most input plugins (ds34vita/vitacontrol) hook same functions, conflicts will definitely arise.
+  Generally that isn't recommended. Most input plugins (ds34vita/vitacontrol) hook same functions, conflicts will definitely arise.  
+  You can use it with ds4touch/ds4motion.
 * **There's no guide/home/ps button on my pad**
   Use L+R+Start combo instead
 
@@ -58,3 +60,4 @@ MIT, see LICENSE.md
 * **rem** - for being lazy/buzy to do the same :P
 * [Graphene](https://github.com/GrapheneCt) - for testing and ideas
 * [Paddel06](https://github.com/paddel06) - for testing og xbox support
+* **null** for requesting and testing mini diva controller support and adrenaline bug

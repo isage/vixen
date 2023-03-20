@@ -64,7 +64,10 @@ DECL_FUNC_HOOK(ksceCtrlGetControllerPortInfo, SceCtrlPortInfo *info)
     for (int i = 0; i < MAX_CONTROLLERS; i++)
     {
       if (controllers[i].inited && controllers[i].attached)
-        info->port[i + 1] = SCE_CTRL_TYPE_DS3; // no touch, so ds3
+      {
+        if (info->port[i + 1] < 3)
+          info->port[i + 1] = SCE_CTRL_TYPE_DS3; // no touch, so ds3
+      }
     }
   }
 
@@ -73,7 +76,7 @@ DECL_FUNC_HOOK(ksceCtrlGetControllerPortInfo, SceCtrlPortInfo *info)
 
 DECL_FUNC_HOOK(sceCtrlGetBatteryInfo, int port, uint8_t *batt)
 {
-  if (port > 0 && controllers[port - 1].attached && controllers[port - 1].inited)
+  if (port > 0 && controllers[port - 1].attached && controllers[port - 1].inited && controllers[port - 1].type == PAD_XBOX360W)
   {
     // Override the battery level for connected controllers
     uint8_t data;
@@ -136,29 +139,31 @@ static void patchControlData(int port, SceCtrlData *data, int count, uint8_t neg
   if (!controllers[cont].inited || !controllers[cont].attached)
     return;
 
-  const ControlData *controlData = &(controllers[cont].controlData);
+  ControlData *controlData = &(controllers[cont].controlData);
 
-  // Forward PS button presses to the kernel so the system menu receives them
-  if (controlData->buttons & SCE_CTRL_PSBUTTON)
-    ksceCtrlSetButtonEmulation(port, 0, 0, SCE_CTRL_PSBUTTON, 16);
+  if (port == 0) { // for port 0 use button emulation
+    uint32_t buttons = 0x00000000;
+    buttons |= controlData->buttons;
+    ksceCtrlSetButtonEmulation(0, 0, buttons, buttons, 16);
+  }
 
   for (int i = 0; i < count; i++)
   {
-    // Reset initial values for controller ports (port 0 is additive)
     if (port > 0)
     {
-      data[i].buttons = (negative ? 0xFFFFFFFF : 0x00000000);
-      data[i].lx = data[i].ly = data[i].rx = data[i].ry = 127;
+      // todo: figure-out drift?
+//      data[i].buttons = (negative ? 0xFFFFFFFF : 0x00000000);
+//      data[i].lx = data[i].ly = data[i].rx = data[i].ry = 127;
+
+      // Set the button data from the controller, with optional negative logic
+      if (negative)
+        data[i].buttons &= ~controlData->buttons;
+      else
+        data[i].buttons |= controlData->buttons;
     }
 
-    // Set the button data from the controller, with optional negative logic
-    if (negative)
-      data[i].buttons &= ~controlData->buttons;
-    else
-      data[i].buttons |= controlData->buttons;
-
-    data[i].lt = clamp(controlData->lt, 0, 255);
-    data[i].rt = clamp(controlData->rt, 0, 255);
+    data[i].lt = clamp(data[i].lt + controlData->lt, 0, 255);
+    data[i].rt = clamp(data[i].rt + controlData->rt, 0, 255);
 
     // Set the stick data from the controller
     data[i].lx = clamp(data[i].lx + controlData->leftX - 127, 0, 255);
@@ -202,6 +207,17 @@ static const SceUsbdDriver libvixenDriver = {
     .detach = libvixen_detach,
 };
 
+int libvixen_usbcharge_probe(int device_id) { return SCE_USBD_PROBE_FAILED; }
+int libvixen_usbcharge_attach(int device_id) { return SCE_USBD_PROBE_FAILED; }
+int libvixen_usbcharge_detach(int device_id) { return SCE_USBD_PROBE_FAILED; }
+
+static const SceUsbdDriver libvixenFakeUsbchargeDriver = {
+    .name   = "usb_charge",
+    .probe  = libvixen_usbcharge_probe,
+    .attach = libvixen_usbcharge_attach,
+    .detach = libvixen_usbcharge_detach,
+};
+
 int libvixen_probe(int device_id)
 {
   SceUsbdDeviceDescriptor *device;
@@ -221,6 +237,7 @@ int libvixen_probe(int device_id)
     if (_devices[i].type == PAD_UNKNOWN)
     {
       // TODO: try generic?
+      ksceDebugPrintf("Not supported!\n");
       return SCE_USBD_PROBE_FAILED;
     }
     return SCE_USBD_PROBE_SUCCEEDED;
@@ -423,6 +440,10 @@ int module_start(SceSize args, void *argp)
 
   int ret_drv = ksceUsbdRegisterDriver(&libvixenDriver);
   ksceDebugPrintf("ksceUsbdRegisterDriver = 0x%08x\n", ret_drv);
+
+  // remove sony usb_charge driver that intercepts HID devices
+  ret_drv = ksceUsbdUnregisterDriver(&libvixenFakeUsbchargeDriver);
+  ksceDebugPrintf("ksceUsbdUnregisterDriver = 0x%08x\n", ret_drv);
 
   ksceKernelRegisterSysEventHandler("zvixen_sysevent", libvixen_sysevent_handler, NULL);
 

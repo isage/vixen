@@ -202,7 +202,10 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
       c->controlData.buttons |= SCE_CTRL_SELECT;
 
     if (bit(c->buffer, 6) && bit(c->buffer, 7) && bit(c->buffer + 1, 1)) // L+R+START combo
+    {
       c->controlData.buttons |= SCE_CTRL_PSBUTTON;
+      c->controlData.buttons &= ~SCE_CTRL_START;
+    }
 
     return 1;
   }
@@ -297,7 +300,10 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
       c->controlData.buttons |= SCE_CTRL_SELECT;
 
     if (bit(c->buffer + 5, 0) && bit(c->buffer + 5, 1) && bit(c->buffer + 5, 5)) // L+R+START combo
+    {
       c->controlData.buttons |= SCE_CTRL_PSBUTTON;
+      c->controlData.buttons &= ~SCE_CTRL_START;
+    }
 
     c->controlData.leftX  = c->buffer[0];
     c->controlData.leftY  = c->buffer[1];

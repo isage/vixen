@@ -43,6 +43,9 @@ Tl;dr if you don't use anything, that presents itself as ds3 (except wireless ds
 * **There's no guide/home/ps button on my pad**
   Use L+R+Start combo instead
 
+## Requesting support for new controllers
+See [ViXEn Helper](https://github.com/isage/vixen-helper)
+
 ## Building
 
 * Install vitausb from https://github.com/isage/vita-packages-extra

@@ -1,6 +1,6 @@
 #include "xbox_360w_controller.h"
 
-#include "../unpack.h"
+#include "utils/bit.h"
 #include "xbox_360_report.h"
 
 #include <psp2kern/ctrl.h>

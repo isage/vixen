@@ -1,6 +1,6 @@
 #include "ds3_controller.h"
 
-#include "../unpack.h"
+#include "utils/bit.h"
 #include "ds3_report.h"
 
 #include <psp2kern/ctrl.h>

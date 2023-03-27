@@ -13,7 +13,6 @@ include("${VITASDK}/share/vita.cmake" REQUIRED)
 
 add_executable(${PROJECT_NAME}
   src/main.c
-  src/unpack.c
   src/devicelist.c
   src/controller.c
   src/controllers/xbox_controller.c
@@ -47,7 +46,6 @@ vita_create_self(${PROJECT_NAME}.skprx ${PROJECT_NAME}
 
 add_executable(${PROJECT_NAME}_ds3
   src/main.c
-  src/unpack.c
   src/devicelist.c
   src/controller.c
   src/controllers/xbox_controller.c

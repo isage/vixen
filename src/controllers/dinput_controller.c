@@ -9,6 +9,7 @@
 #include "dinput/logitech.h"
 #include "dinput/psclassic.h"
 #include "dinput/horidiva.h"
+#include "dinput/raphnetpsx.h"
 
 uint8_t DinputController_probe(Controller *c, int device_id, int port, int vendor, int product)
 {
@@ -111,6 +112,10 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
   else if (c->vendor == 0x046d && (c->product == 0xc216 || c->product == 0xc218)) // logitech
   {
     return logitech_processReport(c, length);
+  }
+  else if (c->vendor == 0x289b && c->product == 0x0044) // raphnet
+  {
+    return raphnetpsx_processReport(c, length);
   }
   else
   {

@@ -25,7 +25,7 @@ Tl;dr if you don't use anything, that presents itself as ds3 (except wireless ds
 * Copy `vixen.skprx` or `vixen_ds3.skprx` into `ur0:tai` folder
 * Add `ur0:tai/vixen.skprx` or `ur0:tai/vixen.skprx` line under `*KERNEL` in tai config and reboot.
 * For vita you need usb Y-cable and external power. See [this](https://github.com/isage/vita-usb-ether#hardware) for example.
-* For pstv it is highly recommended to use usb-hub with external power for gamepads with force-feedback.
+* For pstv it is **highly** recommended to use usb-hub with external power for gamepads with force-feedback.
 
 ## FAQ
 * **Does it support joycon, xbox one s, _insert another wireless controller here_?**  
@@ -64,3 +64,4 @@ MIT, see LICENSE.md
 * [Graphene](https://github.com/GrapheneCt) - for testing and ideas
 * [Paddel06](https://github.com/paddel06) - for testing og xbox support
 * **null** for requesting and testing mini diva controller support and adrenaline bug
+* [Raphaël Assenat](https://github.com/raphnet) for providing Raphnet Technologies PSX to USB report description

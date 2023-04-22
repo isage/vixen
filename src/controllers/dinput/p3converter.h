@@ -52,8 +52,8 @@ uint8_t p3converter_processReport(Controller *c, size_t length)
 
     c->controlData.leftX  = c->buffer[2];
     c->controlData.leftY  = c->buffer[3];
-    c->controlData.rightX = c->buffer[0];
-    c->controlData.rightY = c->buffer[1];
+    c->controlData.rightX = c->buffer[1];
+    c->controlData.rightY = c->buffer[0];
     return 1;
 }
 

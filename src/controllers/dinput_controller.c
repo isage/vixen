@@ -11,6 +11,7 @@
 #include "dinput/horidiva.h"
 #include "dinput/raphnetpsx.h"
 #include "dinput/p3converter.h"
+#include "dinput/sfcconverter.h"
 
 uint8_t DinputController_probe(Controller *c, int device_id, int port, int vendor, int product)
 {
@@ -121,6 +122,10 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
   else if (c->vendor == 0x0e8f && c->product == 0x0003) // PIII Converter Model: 538
   {
     return p3converter_processReport(c, length);
+  }
+  else if (c->vendor == 0x0079 && c->product == 0x1804) // NES/FC/SFC Joypad TO USB BOX
+  {
+    return sfcconverter_processReport(c, length);
   }
   else
   {

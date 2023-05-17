@@ -110,5 +110,6 @@ gamepad_t _devices[] = {{PAD_XBOX360, 0x045e, 0x028e},  // Microsoft X-Box 360 p
                         {PAD_DINPUT, 0x289b, 0x0044}, // Raphnet Technologies PSX to USB v.1.0
                         {PAD_DINPUT, 0x0e8f, 0x0003}, // PIII Converter Model: 538
                         {PAD_DINPUT, 0x0079, 0x1804}, // NES/FC/SFC Joypad TO USB BOX
+                        {PAD_DINPUT, 0x0810, 0x0003}, // PS2 to PS3 USB
 
                         {PAD_UNKNOWN, 0x0000, 0x0000}}; // Null

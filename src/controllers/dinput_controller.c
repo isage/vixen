@@ -9,6 +9,7 @@
 #include "dinput/logitech.h"
 #include "dinput/psclassic.h"
 #include "dinput/horidiva.h"
+#include "dinput/horidiva_ps4.h"
 #include "dinput/raphnetpsx.h"
 #include "dinput/p3converter.h"
 #include "dinput/sfcconverter.h"
@@ -106,11 +107,15 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
 
   if (c->vendor == 0x054c && c->product == 0x0cda) // playstation classic
   {
-    return psclassic_processReport(c, length);;
+    return psclassic_processReport(c, length);
   }
-  else if (c->vendor == 0x0F0D && c->product == 0x0049) // Hori ps3 mini diva
+  else if (c->vendor == 0x0F0D && (c->product == 0x0049 || c->product == 0x00a6)) // Hori ps3 mini diva / Hori divaX ps3 mode
   {
-    return horiDiva_processReport(c, length);;
+    return horiDiva_processReport(c, length);
+  }
+  else if (c->vendor == 0x0F0D && c->product == 0x00a5) // Hori divaX ps4 mode
+  {
+    return horiDivaps4_processReport(c, length);
   }
   else if (c->vendor == 0x046d && (c->product == 0xc216 || c->product == 0xc218)) // logitech
   {

@@ -141,7 +141,7 @@ uint8_t Xbox360Controller_processReport(Controller *c, size_t length)
     }
 #endif
   }
-  else if (length == 20 && c->buffer[0] == 0x00 && c->buffer[1] == 0x14)
+  else if (length == 20 && c->buffer[0] == 0x00 && (c->buffer[1] == 0x14 || c->buffer[1] == 0x00))
   {
     Xbox360Report report;
 
@@ -229,7 +229,7 @@ uint8_t Xbox360Controller_processReport(Controller *c, size_t length)
   }
   else
   {
-    //    ksceDebugPrintf("unknown report\n");
+//        ksceDebugPrintf("unknown report. len = %d\n", length);
   }
   return 0;
 }

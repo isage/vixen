@@ -71,6 +71,7 @@ gamepad_t _devices[] = {{PAD_XBOX360, 0x045e, 0x028e},  // Microsoft X-Box 360 p
                         {PAD_XBOX360, 0x0e6f, 0x021f},  // Rock Candy Gamepad for Xbox 360
                         {PAD_XBOX360W, 0x045e, 0x0719}, // Xbox 360 Wireless Receiver
                         {PAD_XBOX360W, 0x045e, 0x0291}, // Xbox 360 Wireless Receiver (xbox)
+                        {PAD_XBOX360, 0x045e, 0x02a1}, // Open-Frame1
 
                         {PAD_XBOX, 0x0d2f, 0x0002},     // Andamiro Pump It Up pad
                         {PAD_XBOX, 0x045e, 0x0202},     // Microsoft X-Box pad v1 (US)
@@ -107,6 +108,8 @@ gamepad_t _devices[] = {{PAD_XBOX360, 0x045e, 0x028e},  // Microsoft X-Box 360 p
                         {PAD_DINPUT, 0x046d, 0xc216}, // Logitech F310 Gamepad [DirectInput Mode] / DualAction
                         {PAD_DINPUT, 0x054c, 0x0cda}, // Playstation Classic
                         {PAD_DINPUT, 0x0f0d, 0x0049}, // Hori ps3 mini diva
+                        {PAD_DINPUT, 0x0f0d, 0x00a6}, // Hori diva X ps3
+                        {PAD_DINPUT, 0x0f0d, 0x00a5}, // Hori diva X ps4
                         {PAD_DINPUT, 0x289b, 0x0044}, // Raphnet Technologies PSX to USB v.1.0
                         {PAD_DINPUT, 0x0e8f, 0x0003}, // PIII Converter Model: 538
                         {PAD_DINPUT, 0x0079, 0x1804}, // NES/FC/SFC Joypad TO USB BOX

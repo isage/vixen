@@ -1,7 +1,7 @@
 #ifndef __DPAD_ANGLE_H__
 #define __DPAD_ANGLE_H__
 
-inline void process_dpad_angle(Controller *c, int idx)
+static inline void process_dpad_angle(Controller *c, int idx)
 {
     uint8_t dpad = c->buffer[idx] & 0x0F;
     switch (dpad)

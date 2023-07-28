@@ -97,7 +97,7 @@ uint8_t Xbox360Controller_probe(Controller *c, int device_id, int port)
 
 void Xbox360Controller_setRumble(Controller *c, uint8_t small, uint8_t large)
 {
-  uint8_t rumblecmd[] __attribute__((aligned(64))) = {0x00, 0x08, 0x08, small, large, 0x00, 0x00, 0x00};
+  uint8_t rumblecmd[] __attribute__((aligned(64))) = {0x00, 0x08, 0x00, small, large, 0x00, 0x00, 0x00};
 
   usb_write(c, rumblecmd, 8);
 }

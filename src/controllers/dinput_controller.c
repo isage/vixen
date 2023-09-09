@@ -109,7 +109,7 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
   {
     return psclassic_processReport(c, length);
   }
-  else if (c->vendor == 0x0F0D && (c->product == 0x0049 || c->product == 0x00a6)) // Hori ps3 mini diva / Hori divaX ps3 mode
+  else if (c->vendor == 0x0F0D && (c->product == 0x0049 || c->product == 0x00a6 || c->product == 0x0022)) // Hori ps3 mini diva / Hori divaX ps3 mode / Brook universal ds3 mode
   {
     return horiDiva_processReport(c, length);
   }

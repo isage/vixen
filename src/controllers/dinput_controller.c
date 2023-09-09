@@ -7,6 +7,7 @@
 #include <psp2kern/kernel/debug.h>
 
 #include "dinput/logitech.h"
+#include "dinput/logitech_wingman.h"
 #include "dinput/psclassic.h"
 #include "dinput/horidiva.h"
 #include "dinput/horidiva_ps4.h"
@@ -120,6 +121,10 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
   else if (c->vendor == 0x046d && (c->product == 0xc216 || c->product == 0xc218)) // logitech
   {
     return logitech_processReport(c, length);
+  }
+  else if (c->vendor == 0x046d && c->product == 0xc20c) // logitech
+  {
+    return logitechWingman_processReport(c, length);
   }
   else if (c->vendor == 0x289b && c->product == 0x0044) // raphnet
   {

@@ -106,6 +106,7 @@ gamepad_t _devices[] = {{PAD_XBOX360, 0x045e, 0x028e},  // Microsoft X-Box 360 p
 #endif
                         {PAD_DINPUT, 0x046d, 0xc218}, // Logitech F510 Gamepad [DirectInput Mode] / Rumblepad 2
                         {PAD_DINPUT, 0x046d, 0xc216}, // Logitech F310 Gamepad [DirectInput Mode] / DualAction
+                        {PAD_DINPUT, 0x046d, 0xc20c}, // Logitech Wingman
                         {PAD_DINPUT, 0x054c, 0x0cda}, // Playstation Classic
                         {PAD_DINPUT, 0x0f0d, 0x0049}, // Hori ps3 mini diva
                         {PAD_DINPUT, 0x0f0d, 0x00a6}, // Hori diva X ps3

@@ -114,6 +114,10 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
   {
     return horiDiva_processReport(c, length);
   }
+  else if (c->vendor == 0x12ba && c->product == 0x0100) // Raspberry Pi Pico GH
+  {
+    return horiDiva_processReport(c, length);
+  }
   else if (c->vendor == 0x0F0D && c->product == 0x00a5) // Hori divaX ps4 mode
   {
     return horiDivaps4_processReport(c, length);

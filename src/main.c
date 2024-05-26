@@ -15,7 +15,7 @@
 #include <psp2kern/kernel/sysmem/data_transfers.h>
 #include <psp2kern/kernel/threadmgr.h>
 #include <psp2kern/kernel/threadmgr/event_flags.h>
-#include <psp2kern/sblaimgr.h>
+#include <psp2kern/kernel/aimgr.h>
 #include <psp2kern/usbd.h>
 #include <psp2kern/usbserv.h>
 #include <taihen.h>

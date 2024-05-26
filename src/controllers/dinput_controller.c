@@ -97,6 +97,12 @@ uint8_t DinputController_probe(Controller *c, int device_id, int port, int vendo
 
 uint8_t DinputController_processReport(Controller *c, size_t length)
 {
+  // For Dual PSX Adaptor consider only first controller port
+  if (c->vendor == 0x0810 && c->product == 0x0001 && c->buffer[0] != 1)
+  {
+    return 1;
+  }
+
   // reset everything
   c->controlData.buttons = 0;
   c->controlData.leftX   = 128;
@@ -145,6 +151,10 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
   else if (c->vendor == 0x0079 && c->product == 0x1804) // NES/FC/SFC Joypad TO USB BOX
   {
     return sfcconverter_processReport(c, length);
+  }
+  else if (c->vendor == 0x0810 && c->product == 0x0001) // Dual PSX Adaptor
+  {
+    return p2top3converter_processReport(c, length);
   }
   else if (c->vendor == 0x0810 && c->product == 0x0003) // P2 to P3
   {

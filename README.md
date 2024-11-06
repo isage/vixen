@@ -48,7 +48,7 @@ See [ViXEn Helper](https://github.com/isage/vixen-helper)
 
 ## Building
 
-* Install vitausb from https://github.com/isage/vita-packages-extra
+* Install [vitasdk](https://vitasdk.org)
 * `mkdir build && cmake -DCMAKE_BUILD_TYPE=Release .. && make`
 
 ## License

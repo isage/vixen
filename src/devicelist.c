@@ -111,6 +111,8 @@ gamepad_t _devices[] = {{PAD_XBOX360, 0x045e, 0x028e},  // Microsoft X-Box 360 p
                         {PAD_DINPUT, 0x0f0d, 0x0049}, // Hori ps3 mini diva
                         {PAD_DINPUT, 0x0f0d, 0x00a6}, // Hori diva X ps3
                         {PAD_DINPUT, 0x0f0d, 0x00a5}, // Hori diva X ps4
+                        {PAD_DINPUT, 0x0f0d, 0x0101}, // Hori diva FT DX ps4
+                        {PAD_DINPUT, 0x0f0d, 0x0102}, // Hori diva FT DX ps3
                         {PAD_DINPUT, 0x289b, 0x0044}, // Raphnet Technologies PSX to USB v.1.0
                         {PAD_DINPUT, 0x0e8f, 0x0003}, // PIII Converter Model: 538
                         {PAD_DINPUT, 0x0079, 0x1804}, // NES/FC/SFC Joypad TO USB BOX

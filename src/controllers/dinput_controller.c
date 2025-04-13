@@ -118,9 +118,9 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
   }
   else if (c->vendor == 0x0F0D &&
     (
-        c->product == 0x0049 || c->product == 0x00a6 || c->product == 0x0022 || c->product == 0x0092 
+        c->product == 0x0049 || c->product == 0x00a6 || c->product == 0x0022 || c->product == 0x0092 || c->product == 0x0102
     )
-  ) // Hori ps3 mini diva / Hori divaX ps3 mode / Brook universal ds3 mode / Raspberry Pi Pico GP2040CE
+  ) // Hori ps3 mini diva / Hori divaX/DX ps3 mode / Brook universal ds3 mode / Raspberry Pi Pico GP2040CE
   {
     return horiDiva_processReport(c, length);
   }
@@ -128,7 +128,7 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
   {
     return horiDiva_processReport(c, length);
   }
-  else if (c->vendor == 0x0F0D && c->product == 0x00a5) // Hori divaX ps4 mode
+  else if (c->vendor == 0x0F0D && (c->product == 0x00a5 || c->product == 0x0101)) // Hori divaX/DX ps4 mode
   {
     return horiDivaps4_processReport(c, length);
   }

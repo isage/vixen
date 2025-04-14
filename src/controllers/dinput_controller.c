@@ -15,6 +15,7 @@
 #include "dinput/p3converter.h"
 #include "dinput/sfcconverter.h"
 #include "dinput/p2top3converter.h"
+#include "dinput/smartjoypad.h"
 
 uint8_t DinputController_probe(Controller *c, int device_id, int port, int vendor, int product)
 {
@@ -163,6 +164,10 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
   else if (c->vendor == 0x0810 && c->product == 0x0003) // P2 to P3
   {
     return p2top3converter_processReport(c, length);
+  }
+  else if (c->vendor == 0x0b43 && c->product == 0x0001) // Smart Joypad 3 adapter
+  {
+    return smartjoypad_processReport(c, length);
   }
   else
   {

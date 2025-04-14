@@ -17,6 +17,7 @@
 #include "dinput/p2top3converter.h"
 #include "dinput/smartjoypad.h"
 #include "dinput/mayflash.h"
+#include "dinput/neogeox.h"
 
 uint8_t DinputController_probe(Controller *c, int device_id, int port, int vendor, int product)
 {
@@ -173,6 +174,10 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
   else if (c->vendor == 0x0925 && c->product == 0x1700) // Mayflash SS
   {
     return mayflash_processReport(c, length);
+  }
+  else if (c->vendor == 0x1292 && c->product == 0x4e47) // Neogeo X
+  {
+    return neogeox_processReport(c, length);
   }
   else
   {

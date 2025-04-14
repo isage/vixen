@@ -127,5 +127,6 @@ gamepad_t _devices[] = {{PAD_XBOX360, 0x045e, 0x028e},  // Microsoft X-Box 360 p
 
                         {PAD_DINPUT, 0x0b43, 0x0001}, // Smart Joypad 3 adapter
                         {PAD_DINPUT, 0x0925, 0x1700}, // Mayflash SS
+                        {PAD_DINPUT, 0x1292, 0x4e47}, // NEOGEO X
 
                         {PAD_UNKNOWN, 0x0000, 0x0000}}; // Null

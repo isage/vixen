@@ -126,5 +126,6 @@ gamepad_t _devices[] = {{PAD_XBOX360, 0x045e, 0x028e},  // Microsoft X-Box 360 p
                         {PAD_DINPUT, 0x0f0d, 0x0092}, // Raspberry Pi Pico GP2040CE
 
                         {PAD_DINPUT, 0x0b43, 0x0001}, // Smart Joypad 3 adapter
+                        {PAD_DINPUT, 0x0925, 0x1700}, // Mayflash SS
 
                         {PAD_UNKNOWN, 0x0000, 0x0000}}; // Null

@@ -119,8 +119,8 @@ gamepad_t _devices[] = {{PAD_XBOX360, 0x045e, 0x028e},  // Microsoft X-Box 360 p
                         {PAD_DINPUT, 0x0810, 0x0001}, // Dual PSX Adaptor
                         {PAD_DINPUT, 0x0810, 0x0003}, // PS2 to PS3 USB
 
-                        {PAD_DINPUT, 0x0f0d, 0x0022}, // Brook universal fighting board (ds3 mode, same as hori diva X ps3)
-//                        {PAD_DINPUT, 0x0c12, 0x0c30}, // Brook universal fighting board (ds4 mode)
+                        {PAD_DINPUT, 0x0f0d, 0x0022}, // Brook universal fighting board (ds3 mode, same as hori diva X ds3)
+                        {PAD_DINPUT, 0x0c12, 0x0c30}, // Brook universal fighting board (ds4 mode, same as hori diva X ds4)
 
                         {PAD_DINPUT, 0x12ba, 0x0100}, // Raspberry Pi Pico GH
                         {PAD_DINPUT, 0x0f0d, 0x0092}, // Raspberry Pi Pico GP2040CE

@@ -132,6 +132,10 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
   {
     return horiDivaps4_processReport(c, length);
   }
+  else if (c->vendor == 0x0c12 && c->product == 0x0c30) // Brook Universal Fighting Board DS4 mode
+  {
+    return horiDivaps4_processReport(c, length);
+  }
   else if (c->vendor == 0x046d && (c->product == 0xc216 || c->product == 0xc218)) // logitech
   {
     return logitech_processReport(c, length);

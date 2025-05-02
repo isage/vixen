@@ -39,12 +39,12 @@ uint8_t mayflash_processReport(Controller *c, size_t length)
       c->controlData.buttons |= SCE_CTRL_R3;
 
 
-    if (bit(c->buffer + 1, 1))
-      c->controlData.buttons |= SCE_CTRL_START;
     if (bit(c->buffer + 1, 0))
+      c->controlData.buttons |= SCE_CTRL_START;
+    if (bit(c->buffer + 1, 1))
       c->controlData.buttons |= SCE_CTRL_SELECT;
 
-    if (bit(c->buffer, 5) && bit(c->buffer, 7) && bit(c->buffer + 1, 1)) // L+R+START combo
+    if (bit(c->buffer, 5) && bit(c->buffer, 7) && bit(c->buffer + 1, 0)) // L+R+START combo
     {
       c->controlData.buttons |= SCE_CTRL_PSBUTTON;
       c->controlData.buttons &= ~SCE_CTRL_START;

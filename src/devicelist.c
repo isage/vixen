@@ -72,6 +72,7 @@ gamepad_t _devices[] = {{PAD_XBOX360, 0x045e, 0x028e},  // Microsoft X-Box 360 p
                         {PAD_XBOX360W, 0x045e, 0x0719}, // Xbox 360 Wireless Receiver
                         {PAD_XBOX360W, 0x045e, 0x0291}, // Xbox 360 Wireless Receiver (xbox)
                         {PAD_XBOX360, 0x045e, 0x02a1}, // Open-Frame1
+                        {PAD_XBOX360, 0x2f24, 0x0087}, // Mayflash F500 V2 [XInput Mode]
 
                         {PAD_XBOX, 0x0d2f, 0x0002},     // Andamiro Pump It Up pad
                         {PAD_XBOX, 0x045e, 0x0202},     // Microsoft X-Box pad v1 (US)

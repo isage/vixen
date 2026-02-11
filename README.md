@@ -5,13 +5,15 @@ PSVita kernel driver for x-input gamepads (e.g. xbox360)
 
 ## Features
 
-* Support for up to 4 wired usb x-input, original xbox or ps3 devices, Logitech Rumblepad/DualAction and Playstation Classic controllers.
+* Support for up to 4 wired usb x-input/dinput/hid, original xbox and ps3 devices.
 * Support for up to 4 wireless Xbox 360 gamepads via 1 wired usb receiver.
 * Auto turn-off wireless controllers on suspend.
 
-Note: xbox 360 wireless receiver takes over all 4 gamepad ports, so you can't use wired and wireless gamepads simultaniously.
-
 For full list of supported devices see [here](src/devicelist.c)
+
+## Notes:
+* xbox 360 wireless receiver takes over all 4 gamepad ports, so you can't use wired and wireless gamepads simultaniously.
+* 8bitdo adapter requires setting it's mode to Dinput mode (see it's manual)
 
 ## Read this carefully
 There two versions of plugins: `vixen.skprx` and `vixen_ds3.skprx`. Second one supports wired ds3-alike pads.  
@@ -29,8 +31,9 @@ Tl;dr if you don't use anything, that presents itself as ds3 (except wireless ds
 
 ## FAQ
 * **Does it support joycon, xbox one s, _insert another wireless controller here_?**  
-  NO. It supports **wired USB** controllers only. Yes, Xbox 360 is also wired (because you need receiver)
-  For wireless (bluetooth) use [ds34vita](https://github.com/MERLev/ds34vita), [VitaControl](https://github.com/Hydr8gon/VitaControl) or [MiniVitaTV](https://github.com/TheOfficialFloW/MiniVitaTV)
+  Kinda. It supports **wired USB** controllers only. Yes, Xbox 360 is also wired (because you need receiver).  
+  For wireless (bluetooth) use [ds34vita](https://github.com/MERLev/ds34vita), [VitaControl](https://github.com/Hydr8gon/VitaControl) or [MiniVitaTV](https://github.com/TheOfficialFloW/MiniVitaTV)  
+  Alternatively, it supports 8bitdo adapter for bluetooth pads (only ver2 tested).
 * **Can i connect my Xbox 360 pad via charge'n'play?**  
   No. Because it's more charge than play. It doesn't support data. You need wireless receiver.
 * **Does it support _insert controller name here_?**  

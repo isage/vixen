@@ -18,6 +18,16 @@
 #include "dinput/smartjoypad.h"
 #include "dinput/mayflash.h"
 #include "dinput/neogeox.h"
+#include "dinput/8bitdoadapter.h"
+
+#define ksceUsbdGetHidDescriptor(pid, ptr, len, cb, arg) ({ \
+        SceUsbdDeviceRequest _dr; \
+        _dr.bmRequestType = 0x81; \
+        _dr.bRequest = SCE_USBD_REQUEST_GET_DESCRIPTOR; \
+        _dr.wValue = (0x22 << 8); \
+        _dr.wIndex = 0; \
+        _dr.wLength = (len); \
+        ksceUsbdControlTransfer((pid), (&_dr), (ptr), (cb), (arg)); })
 
 uint8_t DinputController_probe(Controller *c, int device_id, int port, int vendor, int product)
 {
@@ -90,6 +100,11 @@ uint8_t DinputController_probe(Controller *c, int device_id, int port, int vendo
 #endif
     if (r < 0)
       return 0;
+
+    // stupid 8bitdo requires reading hid descriptor
+    if (c->vendor == 0x2dc8 && c->product == 0x3105)
+        ksceUsbdGetHidDescriptor(control_pipe_id, NULL, 0, NULL, NULL);
+
     c->attached = 1;
     c->inited   = 1;
   }
@@ -178,6 +193,10 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
   else if (c->vendor == 0x1292 && c->product == 0x4e47) // Neogeo X
   {
     return neogeox_processReport(c, length);
+  }
+  else if (c->vendor == 0x2dc8 && c->product == 0x3105) // 8bitdo adapter
+  {
+    return eightbitdoadapter_processReport(c, length);
   }
   else
   {

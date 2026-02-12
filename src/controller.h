@@ -1,12 +1,13 @@
 #ifndef __CONTROLLER_H__
 #define __CONTROLLER_H__
 
-#include "devicelist.h"
+//#include "devicelist.h"
 
 #include <psp2common/types.h>
 #include <psp2kern/kernel/debug.h>
 #include <psp2kern/usbd.h>
 #include <stdint.h>
+#include <stddef.h>
 
 typedef struct
 {
@@ -19,7 +20,10 @@ typedef struct
   uint8_t rt;
 } ControlData;
 
-typedef struct
+struct Controller;
+typedef struct Controller Controller;
+
+struct Controller
 {
   uint8_t type;
   uint8_t attached; // actual gamepad attached
@@ -35,8 +39,8 @@ typedef struct
   size_t buffer_size;
   int vendor;
   int product;
-
-} Controller;
+  uint8_t (*processReport)(Controller *c, size_t length);
+};
 
 void usb_read(Controller *c);
 void usb_write(Controller *c, uint8_t *data, int len);

@@ -330,6 +330,7 @@ int libvixen_attach(int device_id)
           return SCE_USBD_ATTACH_FAILED;
         }
         ksceDebugPrintf("Attached!\n");
+        controllers[cont].processReport = _devices[i].processReport;
         return SCE_USBD_ATTACH_SUCCEEDED;
       }
     }

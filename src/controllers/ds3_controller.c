@@ -1,4 +1,5 @@
 #include "ds3_controller.h"
+#include "../devicelist.h"
 
 #include "utils/bit.h"
 #include "ds3_report.h"

@@ -2,6 +2,7 @@
 #define __DEVICELIST_H__
 
 #include <stdint.h>
+#include "controller.h"
 
 typedef enum
 {
@@ -18,6 +19,7 @@ typedef struct
   vixenPadType type;
   uint16_t idVendor;
   uint16_t idProduct;
+  uint8_t (*processReport)(Controller *c, size_t length);
 } gamepad_t;
 
 extern gamepad_t _devices[];

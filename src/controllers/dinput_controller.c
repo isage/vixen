@@ -1,24 +1,11 @@
 #include "dinput_controller.h"
+#include "../devicelist.h"
 
 #include "utils/bit.h"
 #include "xbox_360_report.h"
 
 #include <psp2kern/ctrl.h>
 #include <psp2kern/kernel/debug.h>
-
-#include "dinput/logitech.h"
-#include "dinput/logitech_wingman.h"
-#include "dinput/psclassic.h"
-#include "dinput/horidiva.h"
-#include "dinput/horidiva_ps4.h"
-#include "dinput/raphnetpsx.h"
-#include "dinput/p3converter.h"
-#include "dinput/sfcconverter.h"
-#include "dinput/p2top3converter.h"
-#include "dinput/smartjoypad.h"
-#include "dinput/mayflash.h"
-#include "dinput/neogeox.h"
-#include "dinput/8bitdoadapter.h"
 
 #define ksceUsbdGetHidDescriptor(pid, ptr, len, cb, arg) ({ \
         SceUsbdDeviceRequest _dr; \
@@ -130,73 +117,9 @@ uint8_t DinputController_processReport(Controller *c, size_t length)
   c->controlData.lt      = 0;
   c->controlData.rt      = 0;
 
-  if (c->vendor == 0x054c && c->product == 0x0cda) // playstation classic
+  if (c->processReport)
   {
-    return psclassic_processReport(c, length);
-  }
-  else if (c->vendor == 0x0F0D &&
-    (
-        c->product == 0x0049 || c->product == 0x00a6 || c->product == 0x0022 || c->product == 0x0092 || c->product == 0x0102
-    )
-  ) // Hori ps3 mini diva / Hori divaX/DX ps3 mode / Brook universal ds3 mode / Raspberry Pi Pico GP2040CE
-  {
-    return horiDiva_processReport(c, length);
-  }
-  else if (c->vendor == 0x12ba && c->product == 0x0100) // Raspberry Pi Pico GH
-  {
-    return horiDiva_processReport(c, length);
-  }
-  else if (c->vendor == 0x0F0D && (c->product == 0x00a5 || c->product == 0x0101)) // Hori divaX/DX ps4 mode
-  {
-    return horiDivaps4_processReport(c, length);
-  }
-  else if (c->vendor == 0x0c12 && c->product == 0x0c30) // Brook Universal Fighting Board DS4 mode
-  {
-    return horiDivaps4_processReport(c, length);
-  }
-  else if (c->vendor == 0x046d && (c->product == 0xc216 || c->product == 0xc218)) // logitech
-  {
-    return logitech_processReport(c, length);
-  }
-  else if (c->vendor == 0x046d && c->product == 0xc20c) // logitech wingman
-  {
-    return logitechWingman_processReport(c, length);
-  }
-  else if (c->vendor == 0x289b && c->product == 0x0044) // raphnet
-  {
-    return raphnetpsx_processReport(c, length);
-  }
-  else if (c->vendor == 0x0e8f && c->product == 0x0003) // PIII Converter Model: 538
-  {
-    return p3converter_processReport(c, length);
-  }
-  else if (c->vendor == 0x0079 && c->product == 0x1804) // NES/FC/SFC Joypad TO USB BOX
-  {
-    return sfcconverter_processReport(c, length);
-  }
-  else if (c->vendor == 0x0810 && c->product == 0x0001) // Dual PSX Adaptor
-  {
-    return p2top3converter_processReport(c, length);
-  }
-  else if (c->vendor == 0x0810 && c->product == 0x0003) // P2 to P3
-  {
-    return p2top3converter_processReport(c, length);
-  }
-  else if (c->vendor == 0x0b43 && c->product == 0x0001) // Smart Joypad 3 adapter
-  {
-    return smartjoypad_processReport(c, length);
-  }
-  else if (c->vendor == 0x0925 && c->product == 0x1700) // Mayflash SS
-  {
-    return mayflash_processReport(c, length);
-  }
-  else if (c->vendor == 0x1292 && c->product == 0x4e47) // Neogeo X
-  {
-    return neogeox_processReport(c, length);
-  }
-  else if (c->vendor == 0x2dc8 && c->product == 0x3105) // 8bitdo adapter
-  {
-    return eightbitdoadapter_processReport(c, length);
+    return c->processReport(c, length);
   }
   else
   {

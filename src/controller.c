@@ -1,4 +1,5 @@
 #include "controller.h"
+#include "devicelist.h"
 
 #include "controllers/dinput_controller.h"
 #include "controllers/ds3_controller.h"

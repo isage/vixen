@@ -1,4 +1,5 @@
 #include "xbox_360w_controller.h"
+#include "../devicelist.h"
 
 #include "utils/bit.h"
 #include "xbox_360_report.h"

@@ -45,6 +45,90 @@ static int started = 0;
 
 static Controller controllers[MAX_CONTROLLERS];
 
+/*
+ * ViXEn USB slot and PSTV controller port are not the same thing.
+ *
+ * Native DS3/DS4 controllers own their PSTV ports. ViXEn controllers
+ * are assigned to the remaining free ports in USB-slot order.
+ *
+ * 0 = no Vita port assigned
+ * 1..4 = PSTV controller port
+ */
+static int vixen_vita_port[MAX_CONTROLLERS] = {0, 0, 0, 0};
+static uint8_t raw_port_type[MAX_CONTROLLERS + 1] = {0, 0, 0, 0, 0};
+
+static int is_native_controller_type(uint8_t type)
+{
+  return type == SCE_CTRL_TYPE_DS3 || type == SCE_CTRL_TYPE_DS4;
+}
+
+static int vixen_slot_for_vita_port(int port)
+{
+  if (port < 1 || port > MAX_CONTROLLERS)
+    return -1;
+
+  for (int i = 0; i < MAX_CONTROLLERS; i++)
+  {
+    if (controllers[i].attached &&
+        controllers[i].inited &&
+        vixen_vita_port[i] == port)
+      return i;
+  }
+
+  return -1;
+}
+
+static int vixen_primary_slot(void)
+{
+  /*
+   * On PSTV, port 0 is the primary/system controller path.
+   * Do not inject a ViXEn controller into it while a native Sony
+   * controller owns physical port 1.
+   */
+  if (is_native_controller_type(raw_port_type[1]))
+    return -1;
+
+  return vixen_slot_for_vita_port(1);
+}
+
+static void rebuild_vixen_port_map(void)
+{
+  int used[MAX_CONTROLLERS + 1] = {0, 0, 0, 0, 0};
+  int new_map[MAX_CONTROLLERS] = {0, 0, 0, 0};
+
+  /* Native DS3/DS4 ports always win. */
+  for (int port = 1; port <= MAX_CONTROLLERS; port++)
+  {
+    if (is_native_controller_type(raw_port_type[port]))
+      used[port] = 1;
+  }
+
+  /*
+   * Deterministically assign active ViXEn controllers to the lowest
+   * free PSTV ports in internal controller-slot order.
+   */
+  for (int slot = 0; slot < MAX_CONTROLLERS; slot++)
+  {
+    if (!controllers[slot].attached || !controllers[slot].inited)
+      continue;
+
+    for (int port = 1; port <= MAX_CONTROLLERS; port++)
+    {
+      if (!used[port])
+      {
+        new_map[slot] = port;
+        used[port] = 1;
+        break;
+      }
+    }
+  }
+
+  for (int slot = 0; slot < MAX_CONTROLLERS; slot++)
+  {
+    vixen_vita_port[slot] = new_map[slot];
+  }
+}
+
 static inline int clamp(int value, int min, int max)
 {
   if (value <= min)
@@ -60,15 +144,35 @@ DECL_FUNC_HOOK(ksceCtrlGetControllerPortInfo, SceCtrlPortInfo *info)
 
   if (ret >= 0)
   {
-    // Spoof connected controllers to be DualShock 3 controllers
-    for (int i = 0; i < MAX_CONTROLLERS; i++)
+    /*
+     * Save the real PSTV controller topology BEFORE ViXEn spoofs its
+     * own ports. This is authoritative for native Sony controllers.
+     */
+    for (int port = 0; port <= MAX_CONTROLLERS; port++)
     {
-      if (controllers[i].inited && controllers[i].attached)
+      raw_port_type[port] = info->port[port];
+    }
+
+    rebuild_vixen_port_map();
+
+    /*
+     * Advertise each assigned ViXEn controller as DS3, but never
+     * overwrite a real DS3/DS4 controller reported by the PSTV.
+     */
+    for (int slot = 0; slot < MAX_CONTROLLERS; slot++)
+    {
+      int port = vixen_vita_port[slot];
+
+      if (controllers[slot].inited &&
+          controllers[slot].attached &&
+          port >= 1 &&
+          port <= MAX_CONTROLLERS &&
+          !is_native_controller_type(raw_port_type[port]))
       {
-        if (info->port[i + 1] < 3)
-          info->port[i + 1] = SCE_CTRL_TYPE_DS3; // no touch, so ds3
+        info->port[port] = SCE_CTRL_TYPE_DS3;
       }
     }
+
   }
 
   return ret;
@@ -76,12 +180,14 @@ DECL_FUNC_HOOK(ksceCtrlGetControllerPortInfo, SceCtrlPortInfo *info)
 
 DECL_FUNC_HOOK(sceCtrlGetBatteryInfo, int port, uint8_t *batt)
 {
-  if (port > 0 && controllers[port - 1].attached && controllers[port - 1].inited && controllers[port - 1].type == PAD_XBOX360W)
+  int cont = vixen_slot_for_vita_port(port);
+
+  if (cont >= 0 &&
+      controllers[cont].type == PAD_XBOX360W)
   {
-    // Override the battery level for connected controllers
     uint8_t data;
     ksceKernelMemcpyUserToKernel(&data, (void *)batt, sizeof(uint8_t));
-    data = controllers[port - 1].battery_level;
+    data = controllers[cont].battery_level;
     ksceKernelMemcpyKernelToUser((void *)batt, &data, sizeof(uint8_t));
     return 0;
   }
@@ -91,27 +197,31 @@ DECL_FUNC_HOOK(sceCtrlGetBatteryInfo, int port, uint8_t *batt)
 
 DECL_FUNC_HOOK(sceCtrlSetActuator, int port, const SceCtrlActuator *pState)
 {
-  if (port > 0 && controllers[port - 1].attached && controllers[port - 1].inited)
+  int cont = vixen_slot_for_vita_port(port);
+
+  if (cont >= 0)
   {
     SceCtrlActuator lpState;
     ksceKernelMemcpyUserToKernel(&lpState, (void *)pState, sizeof(SceCtrlActuator));
-    switch (controllers[port - 1].type)
+
+    switch (controllers[cont].type)
     {
       case PAD_XBOX360:
-        Xbox360Controller_setRumble(&controllers[port - 1], lpState.small, lpState.large);
+        Xbox360Controller_setRumble(&controllers[cont], lpState.small, lpState.large);
         break;
       case PAD_DS3:
-        DS3Controller_setRumble(&controllers[port - 1], lpState.small, lpState.large);
+        DS3Controller_setRumble(&controllers[cont], lpState.small, lpState.large);
         break;
       case PAD_XBOX360W:
-        Xbox360WController_setRumble(&controllers[port - 1], lpState.small, lpState.large);
+        Xbox360WController_setRumble(&controllers[cont], lpState.small, lpState.large);
         break;
       case PAD_XBOX:
-        XboxController_setRumble(&controllers[port - 1], lpState.small, lpState.large);
+        XboxController_setRumble(&controllers[cont], lpState.small, lpState.large);
         break;
       default:
         break;
     }
+
     return 0;
   }
 
@@ -120,30 +230,37 @@ DECL_FUNC_HOOK(sceCtrlSetActuator, int port, const SceCtrlActuator *pState)
 
 DECL_FUNC_HOOK(sceCtrlDisconnect, int port)
 {
-  if (port > 0 && controllers[port - 1].attached && controllers[port - 1].inited)
+  int cont = vixen_slot_for_vita_port(port);
+
+  if (cont >= 0 && controllers[cont].type == PAD_XBOX360W)
   {
-    if (controllers[port - 1].type == PAD_XBOX360W)
-    {
-      Xbox360WController_turnOff(&controllers[port - 1]);
-      return 0;
-    }
+    Xbox360WController_turnOff(&controllers[cont]);
+    return 0;
   }
+
   return TAI_CONTINUE(int, sceCtrlDisconnectHookRef, port);
 }
 
 static void patchControlData(int port, SceCtrlData *data, int count, uint8_t negative, uint8_t triggers_ext)
 {
-  // Use controller 1 data for port 0, or controllers 1-4 for ports 1-4
-  int cont = (port > 0) ? (port - 1) : 0;
+  int cont;
+
+  if (port == 0)
+    cont = vixen_primary_slot();
+  else
+    cont = vixen_slot_for_vita_port(port);
+
+  if (cont < 0)
+    return;
 
   if (!controllers[cont].inited || !controllers[cont].attached)
     return;
 
   ControlData *controlData = &(controllers[cont].controlData);
 
-  if (port == 0) { // for port 0 use button emulation
-    uint32_t buttons = 0x00000000;
-    buttons |= controlData->buttons;
+  if (port == 0)
+  {
+    uint32_t buttons = controlData->buttons;
     ksceCtrlSetButtonEmulation(0, 0, buttons, buttons, 16);
   }
 
@@ -151,11 +268,6 @@ static void patchControlData(int port, SceCtrlData *data, int count, uint8_t neg
   {
     if (port > 0)
     {
-      // todo: figure-out drift?
-//      data[i].buttons = (negative ? 0xFFFFFFFF : 0x00000000);
-//      data[i].lx = data[i].ly = data[i].rx = data[i].ry = 127;
-
-      // Set the button data from the controller, with optional negative logic
       if (negative)
         data[i].buttons &= ~controlData->buttons;
       else
@@ -165,14 +277,12 @@ static void patchControlData(int port, SceCtrlData *data, int count, uint8_t neg
     data[i].lt = clamp(data[i].lt + controlData->lt, 0, 255);
     data[i].rt = clamp(data[i].rt + controlData->rt, 0, 255);
 
-    // Set the stick data from the controller
     data[i].lx = clamp(data[i].lx + controlData->leftX - 127, 0, 255);
     data[i].ly = clamp(data[i].ly + controlData->leftY - 127, 0, 255);
     data[i].rx = clamp(data[i].rx + controlData->rightX - 127, 0, 255);
     data[i].ry = clamp(data[i].ry + controlData->rightY - 127, 0, 255);
   }
 }
-
 #define DECL_FUNC_HOOK_CTRL(name, negative, triggers)                                                                  \
   DECL_FUNC_HOOK(name, int port, SceCtrlData *data, int count)                                                         \
   {                                                                                                                    \
@@ -301,7 +411,9 @@ int libvixen_attach(int device_id)
       }
 
       if (cont == -1)
+      {
         return SCE_USBD_ATTACH_FAILED;
+      }
 
       if (!controllers[cont].attached)
       {
@@ -331,6 +443,13 @@ int libvixen_attach(int device_id)
         }
         ksceDebugPrintf("Attached!\n");
         controllers[cont].processReport = _devices[i].processReport;
+
+        /*
+         * Assign/reassign PSTV ports immediately after the USB controller
+         * becomes active. The controller-port-info hook will keep this map
+         * synchronized when native Sony controllers appear or disappear.
+         */
+        rebuild_vixen_port_map();
         return SCE_USBD_ATTACH_SUCCEEDED;
       }
     }
@@ -370,7 +489,6 @@ int libvixen_detach(int device_id)
       return SCE_USBD_DETACH_SUCCEEDED;
     }
   }
-
   return SCE_USBD_DETACH_FAILED;
 }
 
@@ -404,6 +522,7 @@ int module_start(SceSize args, void *argp)
   {
     controllers[i].inited   = 0;
     controllers[i].attached = 0;
+    vixen_vita_port[i]      = 0;
   }
 
   // Hook controller info functions

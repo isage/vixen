@@ -13,37 +13,61 @@
 
 void on_read_data(int32_t result, int32_t count, void *arg)
 {
-  // process buffer
-
   Controller *c = (Controller *)arg;
-  if (result == 0 && count > 0 && arg)
+
+  if (!c)
+    return;
+
+  if (result == 0 && count > 0 && c->inited)
   {
-    if (c->inited)
+    int ret = 0;
+    switch (c->type)
     {
-      int ret = 0;
-      switch (c->type)
-      {
-        case PAD_XBOX:
-          ret = XboxController_processReport(c, count);
-          break;
-        case PAD_XBOX360:
-          ret = Xbox360Controller_processReport(c, count);
-          break;
-        case PAD_XBOX360W:
-          ret = Xbox360WController_processReport(c, count);
-          break;
-        case PAD_DS3:
-          ret = DS3Controller_processReport(c, count);
-          break;
-        case PAD_DINPUT:
-          ret = DinputController_processReport(c, count);
-          break;
-        default:
-          break;
-      }
-      if (ret)
-        ksceKernelPowerTick(0); // cancel sleep timers.
+      case PAD_XBOX:
+        ret = XboxController_processReport(c, count);
+        break;
+      case PAD_XBOX360:
+        ret = Xbox360Controller_processReport(c, count);
+        break;
+      case PAD_XBOX360W:
+        ret = Xbox360WController_processReport(c, count);
+        break;
+      case PAD_DS3:
+        ret = DS3Controller_processReport(c, count);
+        break;
+      case PAD_DINPUT:
+        ret = DinputController_processReport(c, count);
+        break;
+      default:
+        break;
     }
+
+    if (ret)
+      ksceKernelPowerTick(0);
+  }
+
+  /*
+   * A failed asynchronous transfer may indicate that the USB device has
+   * disconnected or re-enumerated without a detach callback. Do not keep
+   * resubmitting transfers against the stale endpoint. Retire the slot so
+   * that a subsequently attached device can reuse it.
+   *
+   * Successful zero-length completions are resubmitted normally.
+   */
+  if (result != 0)
+  {
+    c->attached = 0;
+    c->inited   = 0;
+
+    c->controlData.buttons = 0;
+    c->controlData.leftX   = 128;
+    c->controlData.leftY   = 128;
+    c->controlData.rightX  = 128;
+    c->controlData.rightY  = 128;
+    c->controlData.lt      = 0;
+    c->controlData.rt      = 0;
+
+    return;
   }
 
   usb_read(c);
@@ -58,16 +82,15 @@ void on_write_data(int32_t result, int32_t count, void *arg)
 void usb_read(Controller *c)
 {
   int ret;
-
+  if (!c)
+    return;
   if (!c->inited)
     return;
 
   ret = ksceUsbdInterruptTransfer(c->pipe_in, c->buffer, c->buffer_size, on_read_data, c);
-
   if (ret < 0)
   {
     ksceDebugPrintf("ksceUsbdInterruptTransfer(in) error: 0x%08x\n", ret);
-    // error out
   }
 }
 

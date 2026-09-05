@@ -44,6 +44,12 @@
 static int started = 0;
 
 static Controller controllers[MAX_CONTROLLERS];
+static int ultimate2_idle_device_ids[MAX_CONTROLLERS] = {-1, -1, -1, -1};
+
+static int is_ultimate2_idle_receiver(uint16_t vendor, uint16_t product)
+{
+  return vendor == 0x2dc8 && product == 0x6013;
+}
 
 static inline int clamp(int value, int min, int max)
 {
@@ -227,6 +233,10 @@ int libvixen_probe(int device_id)
   {
     ksceDebugPrintf("vendor: %04x\n", device->idVendor);
     ksceDebugPrintf("product: %04x\n", device->idProduct);
+
+    if (is_ultimate2_idle_receiver(device->idVendor, device->idProduct))
+      return SCE_USBD_PROBE_SUCCEEDED;
+
     int i;
     for (i = 0; _devices[i].type != PAD_UNKNOWN; i++)
     {
@@ -254,6 +264,27 @@ int libvixen_attach(int device_id)
   {
     ksceDebugPrintf("vendor: %04x\n", device->idVendor);
     ksceDebugPrintf("product: %04x\n", device->idProduct);
+
+    if (is_ultimate2_idle_receiver(device->idVendor, device->idProduct))
+    {
+      for (int i = 0; i < MAX_CONTROLLERS; i++)
+      {
+        if (ultimate2_idle_device_ids[i] == device_id)
+          return SCE_USBD_ATTACH_SUCCEEDED;
+      }
+
+      for (int i = 0; i < MAX_CONTROLLERS; i++)
+      {
+        if (ultimate2_idle_device_ids[i] < 0)
+        {
+          ultimate2_idle_device_ids[i] = device_id;
+          return SCE_USBD_ATTACH_SUCCEEDED;
+        }
+      }
+
+      return SCE_USBD_ATTACH_FAILED;
+    }
+
     int i;
     for (i = 0; _devices[i].type != PAD_UNKNOWN; i++)
     {
@@ -340,6 +371,14 @@ int libvixen_attach(int device_id)
 
 int libvixen_detach(int device_id)
 {
+  for (int i = 0; i < MAX_CONTROLLERS; i++)
+  {
+    if (ultimate2_idle_device_ids[i] == device_id)
+    {
+      ultimate2_idle_device_ids[i] = -1;
+      return SCE_USBD_DETACH_SUCCEEDED;
+    }
+  }
 
   for (int i = 0; i < MAX_CONTROLLERS; i++)
   {

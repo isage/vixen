@@ -14,6 +14,7 @@
 #include "controllers/dinput/mayflash.h"
 #include "controllers/dinput/neogeox.h"
 #include "controllers/dinput/8bitdoadapter.h"
+#include "controllers/dinput/ultimate2.h"
 
 gamepad_t _devices[] = {{PAD_XBOX360, 0x045e, 0x028e, NULL},  // Microsoft X-Box 360 pad
                         {PAD_XBOX360, 0x045e, 0x028f, NULL},  // Microsoft X-Box 360 pad v2
@@ -146,5 +147,6 @@ gamepad_t _devices[] = {{PAD_XBOX360, 0x045e, 0x028e, NULL},  // Microsoft X-Box
                         {PAD_DINPUT, 0x1292, 0x4e47, neogeox_processReport},           // NEOGEO X
 
                         {PAD_DINPUT, 0x2dc8, 0x3105, eightbitdoadapter_processReport}, // 8bitdo adapter 2 (dinput mode)
+                        {PAD_DINPUT, 0x2dc8, 0x6012, ultimate2_processReport},         // 8BitDo Ultimate 2 Wireless (DInput)
 
                         {PAD_UNKNOWN, 0x0000, 0x0000, NULL}}; // Null

@@ -89,7 +89,8 @@ uint8_t DinputController_probe(Controller *c, int device_id, int port, int vendo
       return 0;
 
     // stupid 8bitdo requires reading hid descriptor
-    if (c->vendor == 0x2dc8 && c->product == 0x3105)
+    if (c->vendor == 0x2dc8 &&
+        (c->product == 0x3105 || c->product == 0x6012))
         ksceUsbdGetHidDescriptor(control_pipe_id, NULL, 0, NULL, NULL);
 
     c->attached = 1;

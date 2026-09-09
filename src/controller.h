@@ -35,6 +35,7 @@ struct Controller
   SceUID pipe_in;
   SceUID pipe_out;
   SceUID pipe_control;
+  uint8_t usb_interface;
   unsigned char buffer[64] __attribute__((aligned(64)));
   size_t buffer_size;
   int vendor;

@@ -15,7 +15,8 @@
 #include "controllers/dinput/neogeox.h"
 #include "controllers/dinput/8bitdoadapter.h"
 
-gamepad_t _devices[] = {{PAD_XBOX360, 0x045e, 0x028e, NULL},  // Microsoft X-Box 360 pad
+gamepad_t _devices[] = {{PAD_XBOX360, 0x2dc8, 0x310b, NULL},  // 8BitDo Ultimate 2 Wireless (XInput)
+                        {PAD_XBOX360, 0x045e, 0x028e, NULL},  // Microsoft X-Box 360 pad
                         {PAD_XBOX360, 0x045e, 0x028f, NULL},  // Microsoft X-Box 360 pad v2
                         {PAD_XBOX360, 0x0738, 0x4716, NULL},  // Mad Catz Wired Xbox 360 Controller
                         {PAD_XBOX360, 0x0738, 0x4726, NULL},  // Mad Catz Xbox 360 Controller
